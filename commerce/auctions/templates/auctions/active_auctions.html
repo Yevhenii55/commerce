@@ -1,0 +1,70 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div class="container">
+  <h2>Category: {{ category.name }}</h2>
+
+  <div class="row">
+    {% for auction in active_auctions %}
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <img src="{{ auction.image_url }}" class="card-img-top" alt="{{ auction.title }}">
+        <div class="card-body">
+          <h5 class="card-title">{{ auction.title }}</h5>
+          <p class="card-text">
+            {% if auction.description|length > 150 %}
+              <span class="card-description">{{ auction.description|slice:":150" }}</span>
+              <span class="card-description-full" style="display: none;">{{ auction.description }}</span>
+              <a href="#" class="show-more">Read More</a>
+            {% else %}
+              {{ auction.description }}
+            {% endif %}
+          </p>
+          <p class="card-text">
+            <span class="current-price">Current Price: ${{ auction.initial_bid }}</span>
+            <span class="bid-count" style="float: right;">(Bids: {{ auction.bids.count }})</span>
+          </p>
+          <p class="status {% if auction.status == 'active' %}active{% else %}closed{% endif %}">
+            {% if auction.status == 'active' %}
+              <span class="text-success">Open</span>
+            {% else %}
+              <span class="text-danger">Closed</span>
+            {% endif %}
+          </p>
+          <a href="{% url 'auction_detail' auction_id=auction.id %}" class="btn btn-primary">View Auction</a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col">
+      <p>No active auctions found in this category.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const showMoreButtons = document.querySelectorAll('.show-more');
+
+      showMoreButtons.forEach(function(button) {
+          button.addEventListener('click', function() {
+              const cardBody = button.parentNode;
+              const cardDescription = cardBody.querySelector('.card-description');
+              const cardDescriptionFull = cardBody.querySelector('.card-description-full');
+              
+              if (cardDescription.style.display === 'none') {
+                  cardDescription.style.display = 'inline';
+                  cardDescriptionFull.style.display = 'none';
+                  button.innerText = 'Read More';
+              } else {
+                  cardDescription.style.display = 'none';
+                  cardDescriptionFull.style.display = 'inline';
+                  button.innerText = 'Read Less';
+              }
+          });
+      });
+  });
+</script>
+
+{% endblock %}

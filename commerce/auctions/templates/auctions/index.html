@@ -1,0 +1,136 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}Auctions{% endblock %}
+
+{% block body %}
+<style>
+    .card {
+        margin-bottom: 20px;
+    }
+
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .card-body {
+        padding: 10px;
+    }
+
+    .card-title {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .card-text {
+        font-size: 14px;
+        margin-bottom: 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-height: 60px;
+    }
+
+    .btn-primary {
+        margin-top: auto;
+    }
+
+    .messages {
+        margin-top: 20px;
+        padding: 10px;
+        list-style: none;
+    }
+
+    .messages li {
+        margin-bottom: 10px;
+    }
+
+    .error {
+        color: red;
+    }
+
+    .success {
+        color: green;
+    }
+
+    .show-more {
+        cursor: pointer;
+        color: blue;
+    }
+
+    .status {
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .status.open {
+        color: green;
+    }
+
+    .status.closed {
+        color: red;
+    }
+</style>
+
+<h1>Auctions</h1>
+{% if auctions %}
+<div class="row">
+    {% for auction in auctions %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <img src="{{ auction.image_url }}" class="card-img-top" alt="{{ auction.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ auction.title }}</h5>
+                <p class="card-text">{{ auction.description }}</p>
+                {% if auction.description|length > 60 %}
+                <p class="show-more">Read More</p>
+                {% endif %}
+                <p class="card-text">
+                    <span class="current-price">Current Price: ${{ auction.initial_bid }}</span>
+                    <span class="bid-count" style="float: right;">(Bids: {{ auction.bids.count  }})</span>
+                    {% if comments.count > 0 %}
+                        <span class="comment-count">
+                            <i class="fas fa-star text-warning"></i> {{ comments.count }}
+                        </span>
+                    {% else %}
+                        <span class="comment-count">
+                            <i class="fas fa-star text-warning"></i> 
+                        </span>
+                    {% endif %}
+                </p>
+                <p class="status {% if auction.status == 'active' %}active{% else %}closed{% endif %}">
+                    {% if auction.status == 'active' %}
+                      <span class="text-success">Open</span>
+                    {% else %}
+                      <span class="text-danger">Closed</span>
+                    {% endif %}
+                  </p>
+                <a href="{% url 'auction_detail' auction_id=auction.id %}" class="btn btn-primary">View Auction</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>No auctions available.</p>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const showMoreButtons = document.querySelectorAll('.show-more');
+
+        showMoreButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                const cardText = button.previousElementSibling;
+                const maxHeight = cardText.style.maxHeight;
+                if (maxHeight === '60px') {
+                    cardText.style.maxHeight = 'none';
+                    button.innerText = 'Read Less';
+                } else {
+                    cardText.style.maxHeight = '60px';
+                    button.innerText = 'Read More';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

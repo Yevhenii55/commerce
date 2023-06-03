@@ -1,0 +1,76 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}Watchlist{% endblock %}
+
+{% block body %}
+{% load static %}
+
+<style>
+    .watchlist-title {
+        text-align: center;
+    }
+
+    .list-group-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .list-group-item img {
+        width: 200px;
+        height: auto;
+        margin-right: 20px;
+    }
+
+    .list-group-item .col-md-9 {
+        flex-grow: 1;
+    }
+</style>
+
+<h2 class="watchlist-title">Watchlist</h2>
+<hr>
+
+{% if user.is_authenticated %}
+    {% if watchlist_items %}
+        <ul class="list-group">
+            {% for item in watchlist_items %}
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-md-3">
+                            {% if item.auction.image_url %}
+                                <img src="{{ item.auction.image_url }}" alt="Auction Image" class="img-fluid">
+                            {% else %}
+                                <img src="{% static 'auctions/default-image.jpg' %}" alt="Default Image" class="img-fluid">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-9">
+                            <h5>{{ item.auction.title }}</h5>
+                            <p><strong>End Date:</strong> {{ item.auction.end_date }}</p>
+                            <p><strong>Current Price:</strong> ${{ item.auction.initial_bid }}</p>
+                            <p><strong>Category:</strong> {{ item.auction.category.name}}</p>
+                            <p class="status {% if item.auction.status == 'active' %}active{% else %}closed{% endif %}">
+                                {% if item.auction.status == 'active' %}
+                                  <span class="text-success">Open</span>
+                                {% else %}
+                                  <span class="text-danger">Closed</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 text-right">
+                            <a href="{% url 'auction_detail' item.auction.id %}" class="btn btn-primary btn-sm">View Auction</a>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">Your watchlist is empty.</p>
+    {% endif %}
+{% else %}
+    <p class="text-muted">Please <a href="{% url 'login' %}">login</a> to view your watchlist.</p>
+{% endif %}
+
+{% endblock %}

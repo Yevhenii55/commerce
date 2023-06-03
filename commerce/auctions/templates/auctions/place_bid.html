@@ -1,0 +1,66 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}Auction Detail: {{ auction.title }}{% endblock %}
+
+{% block body %}
+<div class="container">
+  <h2>Auction Detail: {{ auction.title }}</h2>
+  
+  <div class="row">
+    <div class="col-md-6">
+      {% if auction.image_url %}
+        <img src="{{ auction.image_url }}" alt="{{ auction.title }}" class="img-fluid mb-4">
+      {% else %}
+        <div class="no-image-placeholder">No Image Available</div>
+      {% endif %}
+      
+      <p><strong>Description:</strong></p>
+      <p>{{ auction.description }}</p>
+      
+      <p><strong>Current Price:</strong> ${{ auction.initial_bid }}</p>
+      
+      <p><strong>Start Date:</strong> {{ auction.start_date }}</p>
+      <p><strong>End Date:</strong> {{ auction.end_date }}</p>
+      
+      <p><strong>Category:</strong> {{ auction.category }}</p>
+    </div>
+  </div>
+  
+  <hr>
+  
+  <h3>Bids</h3>
+  {% if bids %}
+    <ul class="list-group">
+      {% for bid in bids %}
+        <li class="list-group-item">
+          <strong>{{ bid.user }}</strong> placed a bid of ${{ bid.amount }}
+          <small class="text-muted">at {{ bid.timestamp }}</small>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No bids yet.</p>
+  {% endif %}
+  
+  <hr>
+  
+  <h3>Place a Bid</h3>
+  <form method="post" action="{% url 'place_bid' auction_id=auction.id %}">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="bid_amount">Bid Amount:</label>
+      <input type="number" step="0.01" class="form-control" id="bid_amount" name="bid_amount" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Place Bid</button>
+  </form>
+  
+  {% if messages %}
+    <div class="alert alert-danger mt-4">
+      {% for message in messages %}
+        {{ message }}
+        <br>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

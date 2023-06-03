@@ -1,0 +1,58 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}Create Auction{% endblock %}
+
+{% block body %}
+
+<div class="container">
+  <h1>Create Auction</h1>
+{% if messages %}
+<ul class="messages">
+{% for message in messages %}
+<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+  <form method="post" action="{% url 'create_auction' %}">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="title">Title:</label>
+      <input type="text" class="form-control" id="title" name="title" required>
+    </div>
+    <div class="form-group">
+      <label for="description">Description:</label>
+      <textarea class="form-control" id="description" name="description" required></textarea>
+    </div>
+    <div class="form-group">
+      <label for="start_date">Start Date:</label>
+      <input type="datetime-local" class="form-control" id="start_date" name="start_date" required>
+    </div>
+    <div class="form-group">
+      <label for="end_date">End Date:</label>
+      <input type="datetime-local" class="form-control" id="end_date" name="end_date" required>
+    </div>
+    <div class="form-group">
+      <label for="initial_bid">Initial Bid:</label>
+      <input type="number" class="form-control" id="initial_bid" name="initial_bid" step="0.01" required>
+    </div>
+    <div class="form-group">
+      <label for="image_url">Image URL:</label>
+      <input type="url" class="form-control" id="image_url" name="image_url">
+    </div>
+    <div class="form-group">
+      <label for="category_id">Category:</label>
+      <select class="form-control" id="category_id" name="category_id">
+        <option value="">Select category</option>
+        {% for category in categories %}
+          <option value="{{ category.id }}">{{ category.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+  </form>
+</div>
+{% endblock %}
+
+
+
